@@ -22,8 +22,13 @@
             inputs.rust-overlay.overlays.default
           ];
         };
-      in {
-        devShells.default = import ./devshell.nix { inherit pkgs; };
+
+        devShell = import ./devshell.nix { inherit pkgs; };
+      in rec {
+        devShells = {
+          "2015" = devShell ./aoc-2015/devshell.nix;
+          default = devShells."2015";
+        };
       }
     );
 }
