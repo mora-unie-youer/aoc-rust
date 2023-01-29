@@ -3,8 +3,12 @@
 let
   # Until I have nice devshell flake
   name = "aoc-rust";
-  # 0-255 or hex color
-  color = "#17BEBB";
+  # Contains values for 3-bit/8-bit/24-bit coloring
+  colors = {
+    "3bit" = "1";
+    "8bit" = "202";
+    "24bit" = "#17BEBB";
+  };
   packages = with pkgs; [
     # Toolchain needed to build binaries
     binutils
@@ -29,43 +33,20 @@ pkgs.mkShell {
       if [[ $path != . ]]; then echo " $path "; fi
     }
 
-    # get_colors (int?) - number of bit colors terminal supports
-    # - <empty> -> terminal doesn't support colors
-    # - 4 -> 4-bit
-    # - 8 -> 8-bit
-    # - 24 -> 24-bit
-    get_colors() {
-      if [[ $COLORTERM = "truecolor" ]] || [[ $COLORTERM = "24bit" ]]; then
-        echo 24
-      else
-        local colors=$(tput colors)
-        if [[ "$colors" = "256" ]]; then
-          echo 8
-        elif [[ "$colors" = "8" ]] || [[ "$colors" = "16" ]]; then
-          echo 4
-        fi
-      fi
-    }
-    COLORS=$(get_colors)
-    USER_COLOR=${color}
-
-    if [[ "$USER_COLOR" =~ ^\# ]]; then
-      # Parse HEX color
-      if [[ "$COLORS" = "24" ]]; then
-        COLOR=$(printf "\e[38;2;%d;%d;%d2m" 0x''${USER_COLOR:1:2} 0x''${USER_COLOR:3:2} 0x''${USER_COLOR:5:2})
-      else
-        # Fallback color on not having 24bit coloring
-        COLOR="\e[38;5;202m"
-      fi
+    if [[ $COLORTERM = "truecolor" ]] || [[ $COLORTERM = "24bit" ]]; then
+      # We have 24-bit colors
+      HEX_COLOR=${colors."24bit"}
+      COLOR=$(printf "\e[38;2;%d;%d;%d2m" 0x''${HEX_COLOR:1:2} 0x''${HEX_COLOR:3:2} 0x''${HEX_COLOR:5:2})
     else
-      # Generate color string
-      COLOR="\e[38;5;''${USER_COLOR}m"
+      _colors=$(tput colors)
+      if [[ "$_colors" = "256" ]]; then
+        # We have 8-bit colors
+        COLOR=$(printf "\e[38;5;%dm" ${colors."8bit"})
+      elif [[ "$_colors" = "8" ]] || [[ "$_colors" = "16" ]]; then
+        # We have 3/4-bit colors
+        COLOR=$(printf "\e[3%dm" ${colors."3bit"})
+      fi
     fi
-    if [[ "$COLORS" -lt "8" ]]; then
-      # Fallback color on not having 24bit/8bit coloring
-      COLOR="\e[31m"
-    fi
-
     PS1="\[$COLOR\][${name}]\$(rel_root)\$\[\033[0m\] "
   '';
 }
