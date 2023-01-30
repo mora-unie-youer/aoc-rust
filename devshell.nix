@@ -21,6 +21,9 @@ let
       (rust-bin.selectLatestNightlyWith (toolchain: toolchain.default.override {
         extensions = [ "rust-analyzer" "rust-src" ];
       }))
+      # Binaries and libraries needed for Rust crates
+      openssl
+      pkg-config
     ];
   };
 
