@@ -54,7 +54,10 @@ pkgs.mkShell {
   shellHook = ''
     # Initialize LD path for library loading
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${pkgs.lib.makeLibraryPath config.packages}
+    # Moving to AoC <year> folder
+    cd ${config.name}
     PROJECT_ROOT=$PWD
+
     rel_root() {
       local path
       path=$(${pkgs.coreutils}/bin/realpath --relative-to $PROJECT_ROOT $PWD)
