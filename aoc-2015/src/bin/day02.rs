@@ -1,7 +1,7 @@
 use aoc_2015::*;
 
 const DAY: i32 = 2;
-type Solution = u32;
+type Solution = usize;
 
 fn main() {
     let input = get_input_text(DAY);

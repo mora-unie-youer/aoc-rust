@@ -5,7 +5,7 @@ use std::ops::ControlFlow;
 use aoc_2015::*;
 
 const DAY: i32 = 1;
-type Solution = i32;
+type Solution = isize;
 
 fn main() {
     let input = get_input_text(DAY);
