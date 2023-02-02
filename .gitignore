@@ -1,5 +1,4 @@
 .session
 Cargo.lock
-flake.lock
 inputs/
 target/
