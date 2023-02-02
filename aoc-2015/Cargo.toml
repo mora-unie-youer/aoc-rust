@@ -10,3 +10,5 @@ name = "aoc_2015"
 
 [dependencies]
 aoc = { path = "../aoc" }
+# Required for day 04
+rust-crypto = "0.2.36"
