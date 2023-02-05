@@ -180,71 +180,48 @@ impl<'wire> From<&'wire str> for Instruction<'wire> {
     }
 }
 
+fn solve<'input>(mut instructions: Vec<Instruction<'input>>, wires: &mut Wires<'input>) {
+    while !instructions.is_empty() {
+        instructions.retain(|instr| match instr.gate {
+            Gate::ASSIGN => match instr.op1 {
+                Wire::Set(v) => {
+                    let wire_name = match instr.out {
+                        Wire::Unset(name) => name,
+                        _ => panic!("Tried to get name of set wire"),
+                    };
+
+                    if !wires.contains_key(wire_name) {
+                        wires.insert(wire_name, v);
+                    }
+
+                    false
+                }
+                _ => true,
+            },
+            _ => true,
+        });
+
+        instructions = instructions
+            .iter()
+            .map(|instr| instr.result(&wires))
+            .collect();
+    }
+}
+
 fn main() {
     let input = get_input_text(DAY);
     let instructions: Vec<Instruction> = input.lines().map(|s| s.into()).collect();
 
     let solution1: Solution = {
-        let mut instructions = instructions.clone();
         let mut wires: Wires = HashMap::new();
-
-        while !instructions.is_empty() {
-            instructions.retain(|instr| match instr.gate {
-                Gate::ASSIGN => match instr.op1 {
-                    Wire::Set(v) => {
-                        let wire_name = match instr.out {
-                            Wire::Unset(name) => name,
-                            _ => panic!("Tried to get name of set wire"),
-                        };
-
-                        wires.insert(wire_name, v);
-                        false
-                    }
-                    _ => true,
-                },
-                _ => true,
-            });
-
-            instructions = instructions
-                .iter()
-                .map(|instr| instr.result(&wires))
-                .collect();
-        }
-
+        solve(instructions.clone(), &mut wires);
         *wires.get("a").expect("Value of `a` was not recieved")
     };
 
     let solution2: Solution = {
-        let mut instructions = instructions.clone();
         let mut wires: Wires = HashMap::new();
         wires.insert("b", solution1);
-
-        while !instructions.is_empty() {
-            instructions.retain(|instr| match instr.gate {
-                Gate::ASSIGN => match instr.op1 {
-                    Wire::Set(v) => {
-                        let wire_name = match instr.out {
-                            Wire::Unset(name) => name,
-                            _ => panic!("Tried to get name of set wire"),
-                        };
-
-                        if !wires.contains_key(wire_name) {
-                            wires.insert(wire_name, v);
-                        }
-
-                        false
-                    }
-                    _ => true,
-                },
-                _ => true,
-            });
-
-            instructions = instructions
-                .iter()
-                .map(|instr| instr.result(&wires))
-                .collect();
-        }
-
+        solve(instructions.clone(), &mut wires);
         *wires.get("a").expect("Value of `a` was not recieved")
     };
 
