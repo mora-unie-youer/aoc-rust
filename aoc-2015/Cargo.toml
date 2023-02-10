@@ -12,5 +12,7 @@ name = "aoc_2015"
 aoc = { path = "../aoc" }
 # Required for day 09
 itertools = "0.10.5"
+# Required for day 12
+json = "0.12.4"
 # Required for day 04
 rust-crypto = "0.2.36"
