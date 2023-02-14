@@ -14,5 +14,7 @@ aoc = { path = "../aoc" }
 itertools = "0.10.5"
 # Required for day 12
 json = "0.12.4"
+# Required for day 16
+phf = { version = "0.11.1", features = ["macros"] }
 # Required for day 04
 rust-crypto = "0.2.36"
