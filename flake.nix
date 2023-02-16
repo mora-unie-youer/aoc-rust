@@ -5,6 +5,11 @@
     flake-utils.url = "github:numtide/flake-utils";
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
+    devshell = {
+      url = "github:mora-unie-youer/devshell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -18,7 +23,7 @@
         pkgs = import inputs.nixpkgs {
           inherit system;
           overlays = [
-            # inputs.devshell.overlays.default
+            inputs.devshell.overlays.default
             inputs.rust-overlay.overlays.default
           ];
         };

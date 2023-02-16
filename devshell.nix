@@ -6,12 +6,6 @@ let
   defaultConfig = {
     # Name of devshell
     name = "aoc-rust";
-    # 3-bit/8-bit/24-bit coloring of devshell
-    colors = {
-      "3bit" = "1";
-      "8bit" = "202";
-      "24bit" = "#17BEBB";
-    };
     # Packages used in devshell
     packages = with pkgs; [
       # Toolchain needed to build binaries
@@ -42,42 +36,17 @@ let
       );
     in f [] attrList;
 
+  loadedConfiguration = import configFile { inherit pkgs; };
+
   # Devshell configuration
-  config = recursiveMerge [
+  configuration = recursiveMerge [
     defaultConfig
-    (import configFile { inherit pkgs; })
+    loadedConfiguration
+    {
+      shellHooks.preInit = ''
+        cd ${loadedConfiguration.name}
+      '';
+    }
   ];
 in
-pkgs.mkShell {
-  buildInputs = config.packages;
-
-  shellHook = ''
-    # Initialize LD path for library loading
-    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${pkgs.lib.makeLibraryPath config.packages}
-    # Moving to AoC <year> folder
-    cd ${config.name}
-    PROJECT_ROOT=$PWD
-
-    rel_root() {
-      local path
-      path=$(${pkgs.coreutils}/bin/realpath --relative-to $PROJECT_ROOT $PWD)
-      if [[ $path != . ]]; then echo " $path "; fi
-    }
-
-    if [[ $COLORTERM = "truecolor" ]] || [[ $COLORTERM = "24bit" ]]; then
-      # We have 24-bit colors
-      HEX_COLOR=${config.colors."24bit"}
-      COLOR=$(printf "\e[38;2;%d;%d;%d2m" 0x''${HEX_COLOR:1:2} 0x''${HEX_COLOR:3:2} 0x''${HEX_COLOR:5:2})
-    else
-      _colors=$(tput colors)
-      if [[ "$_colors" = "256" ]]; then
-        # We have 8-bit colors
-        COLOR=$(printf "\e[38;5;%dm" ${config.colors."8bit"})
-      elif [[ "$_colors" = "8" ]] || [[ "$_colors" = "16" ]]; then
-        # We have 3/4-bit colors
-        COLOR=$(printf "\e[3%dm" ${config.colors."3bit"})
-      fi
-    fi
-    PS1="\[$COLOR\][${config.name}]\$(rel_root)\$\[\033[0m\] "
-  '';
-}
+pkgs.devShell.mkShell configuration
