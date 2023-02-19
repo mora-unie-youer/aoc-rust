@@ -10,7 +10,7 @@ name = "aoc_2015"
 
 [dependencies]
 aoc = { path = "../aoc" }
-# Required for day 09, 13
+# Required for day 09, 13, 21
 itertools = "0.10.5"
 # Required for day 12
 json = "0.12.4"
