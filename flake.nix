@@ -32,7 +32,8 @@
       in rec {
         devShells = {
           "2015" = devShell ./aoc-2015/devshell.nix;
-          default = devShells."2015";
+          "2016" = devShell ./aoc-2016/devshell.nix;
+          default = devShells."2016";
         };
       }
     );
