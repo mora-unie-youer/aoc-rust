@@ -10,3 +10,5 @@ name = "aoc_2016"
 
 [dependencies]
 aoc = { path = "../aoc" }
+# For days with complicated input :^)
+regex = "1.7.1"
