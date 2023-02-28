@@ -1,6 +1,6 @@
 #![feature(control_flow_enum)]
 
-use std::{collections::HashSet, ops::ControlFlow};
+use std::{cmp::Ordering, collections::HashSet, ops::ControlFlow};
 
 use aoc_2015::*;
 use itertools::Itertools;
@@ -37,10 +37,12 @@ fn solve(weights: &[Solution], splits: usize) -> Solution {
                 sum += weight;
                 product *= weight;
 
-                if sum == split_size {
-                    choices.insert((i + 1, product));
-                } else if sum > split_size {
-                    break;
+                match sum.cmp(&split_size) {
+                    Ordering::Equal => {
+                        choices.insert((i + 1, product));
+                    }
+                    Ordering::Greater => break,
+                    _ => (),
                 }
             }
         }

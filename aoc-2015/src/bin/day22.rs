@@ -176,7 +176,7 @@ fn solve(games: &mut HashMap<Game, Solution>, game: Game, used_mana: Solution) -
             let mut new_game = game.clone();
             let new_used_mana = used_mana + spell.cost();
             match new_game.make_turn(spell) {
-                Some(victory) if victory => return new_used_mana,
+                Some(victory) if victory => new_used_mana,
                 None => solve(games, new_game, new_used_mana),
                 // We lost in the game
                 _ => std::usize::MAX,

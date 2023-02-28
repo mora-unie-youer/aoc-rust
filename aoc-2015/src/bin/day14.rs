@@ -15,8 +15,8 @@ struct Reindeer {
     points: Solution,
 }
 
-impl Reindeer {
-    fn new(line: &str) -> Self {
+impl From<&str> for Reindeer {
+    fn from(line: &str) -> Self {
         let split: Vec<_> = line.split(' ').collect();
         let run_time = split[6].parse().unwrap();
         Self {
@@ -30,7 +30,9 @@ impl Reindeer {
             points: 0,
         }
     }
+}
 
+impl Reindeer {
     fn tick(&mut self) {
         if self.running {
             self.distance += self.speed;
@@ -51,7 +53,7 @@ impl Reindeer {
 const PASSED_TIME: usize = 2503;
 fn main() {
     let input = get_input_text(DAY);
-    let mut reindeers: Vec<_> = input.lines().map(|line| Reindeer::new(line)).collect();
+    let mut reindeers: Vec<_> = input.lines().map(Reindeer::from).collect();
 
     //// Solution without simulating the game. Unused because we have to simulate anyway
     // let solution1: Solution = reindeers

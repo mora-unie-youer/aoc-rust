@@ -8,25 +8,25 @@ type Wires<'name> = HashMap<&'name str, Solution>;
 
 #[derive(Clone, Copy)]
 enum Gate {
-    NOT,
+    Not,
 
-    LSHIFT,
-    RSHIFT,
+    Lshift,
+    Rshift,
 
-    AND,
-    OR,
+    And,
+    Or,
 
-    ASSIGN,
+    Assign,
 }
 
 impl From<&str> for Gate {
     fn from(value: &str) -> Self {
         match value {
-            "NOT" => Self::NOT,
-            "LSHIFT" => Self::LSHIFT,
-            "RSHIFT" => Self::RSHIFT,
-            "AND" => Self::AND,
-            "OR" => Self::OR,
+            "NOT" => Self::Not,
+            "LSHIFT" => Self::Lshift,
+            "RSHIFT" => Self::Rshift,
+            "AND" => Self::And,
+            "OR" => Self::Or,
             _ => unreachable!(),
         }
     }
@@ -62,10 +62,7 @@ impl ApplyWire for Wire<'_> {
 
 impl ApplyWire for Option<Wire<'_>> {
     fn apply(self, wires: &Wires) -> Self {
-        match self {
-            Some(wire) => Some(wire.apply(wires)),
-            _ => None,
-        }
+        self.map(|wire| wire.apply(wires))
     }
 }
 
@@ -97,10 +94,7 @@ trait IsSetWire {
 
 impl IsSetWire for Wire<'_> {
     fn is_set(&self) -> bool {
-        match self {
-            Self::Set(_) => true,
-            _ => false,
-        }
+        matches!(self, Self::Set(_))
     }
 }
 
@@ -132,16 +126,16 @@ impl Instruction<'_> {
             }
         } else {
             let value = match self.gate {
-                Gate::NOT => !self.op1.get_value(),
-                Gate::LSHIFT => self.op1.get_value() << self.op2.get_value(),
-                Gate::RSHIFT => self.op1.get_value() >> self.op2.get_value(),
-                Gate::AND => self.op1.get_value() & self.op2.get_value(),
-                Gate::OR => self.op1.get_value() | self.op2.get_value(),
+                Gate::Not => !self.op1.get_value(),
+                Gate::Lshift => self.op1.get_value() << self.op2.get_value(),
+                Gate::Rshift => self.op1.get_value() >> self.op2.get_value(),
+                Gate::And => self.op1.get_value() & self.op2.get_value(),
+                Gate::Or => self.op1.get_value() | self.op2.get_value(),
                 _ => unreachable!(),
             };
 
             Instruction {
-                gate: Gate::ASSIGN,
+                gate: Gate::Assign,
                 op1: Wire::Set(value),
                 op2: None,
                 out: self.out,
@@ -156,7 +150,7 @@ impl<'wire> From<&'wire str> for Instruction<'wire> {
         match parts.len() {
             // Assignment
             3 => Instruction {
-                gate: Gate::ASSIGN,
+                gate: Gate::Assign,
                 op1: parts[0].into(),
                 op2: None,
                 out: parts[2].into(),
@@ -183,7 +177,7 @@ impl<'wire> From<&'wire str> for Instruction<'wire> {
 fn solve<'input>(mut instructions: Vec<Instruction<'input>>, wires: &mut Wires<'input>) {
     while !instructions.is_empty() {
         instructions.retain(|instr| match instr.gate {
-            Gate::ASSIGN => match instr.op1 {
+            Gate::Assign => match instr.op1 {
                 Wire::Set(v) => {
                     let wire_name = match instr.out {
                         Wire::Unset(name) => name,
@@ -203,14 +197,14 @@ fn solve<'input>(mut instructions: Vec<Instruction<'input>>, wires: &mut Wires<'
 
         instructions = instructions
             .iter()
-            .map(|instr| instr.result(&wires))
+            .map(|instr| instr.result(wires))
             .collect();
     }
 }
 
 fn main() {
     let input = get_input_text(DAY);
-    let instructions: Vec<Instruction> = input.lines().map(|s| s.into()).collect();
+    let instructions: Vec<_> = input.lines().map(Instruction::from).collect();
 
     let solution1: Solution = {
         let mut wires: Wires = HashMap::new();

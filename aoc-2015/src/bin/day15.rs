@@ -84,13 +84,13 @@ impl Iterator for AmountIterator {
             *a3 = MAX_INGREDIENTS - *a0 - *a1 - *a2;
         }
 
-        Some(self.amounts.clone())
+        Some(self.amounts)
     }
 }
 
 fn solve(
     amounts_iter: AmountIterator,
-    ingridients: &Vec<Ingridient>,
+    ingridients: &[Ingridient],
     filter_calories: bool,
 ) -> Solution {
     amounts_iter
@@ -119,11 +119,11 @@ fn solve(
 fn main() {
     let input = get_input_text(DAY);
 
-    let ingridients: Vec<Ingridient> = input.lines().map(|line| line.into()).collect();
+    let ingridients: Vec<Ingridient> = input.lines().map(Ingridient::from).collect();
     let amounts_iter = AmountIterator::new();
 
     let solution1: Solution = solve(amounts_iter.clone(), &ingridients, false);
-    let solution2: Solution = solve(amounts_iter.clone(), &ingridients, true);
+    let solution2: Solution = solve(amounts_iter, &ingridients, true);
 
     show_solution(DAY, solution1);
     show_solution(DAY, solution2);

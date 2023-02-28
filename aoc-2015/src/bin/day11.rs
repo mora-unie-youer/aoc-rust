@@ -13,10 +13,7 @@ trait PasswordChar {
 
 impl PasswordChar for char {
     fn is_forbidden(&self) -> bool {
-        match self {
-            'i' | 'l' | 'o' => true,
-            _ => false,
-        }
+        matches!(self, 'i' | 'l' | 'o')
     }
 
     fn next_char(&self) -> char {

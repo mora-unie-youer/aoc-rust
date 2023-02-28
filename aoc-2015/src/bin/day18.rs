@@ -78,7 +78,7 @@ impl Grid {
 }
 
 fn solve(input: &str, corners_on: bool) -> Solution {
-    let mut grid = Grid::new(&input, corners_on);
+    let mut grid = Grid::new(input, corners_on);
     (0..100).for_each(|_| grid.update());
     grid.read.flatten().iter().filter(|&&on| on).count()
 }

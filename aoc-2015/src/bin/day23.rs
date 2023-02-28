@@ -19,47 +19,47 @@ impl From<&str> for Register {
 }
 
 enum Offset {
-    POS(usize),
-    NEG(usize),
+    Pos(usize),
+    Neg(usize),
 }
 
 impl From<&str> for Offset {
     fn from(value: &str) -> Self {
         let offset = value[1..].parse().unwrap();
         match value.chars().next().unwrap() {
-            '+' => Self::POS(offset),
-            '-' => Self::NEG(offset),
+            '+' => Self::Pos(offset),
+            '-' => Self::Neg(offset),
             _ => unreachable!(),
         }
     }
 }
 
 enum Instruction {
-    HLF(Register),
-    TPL(Register),
-    INC(Register),
-    JMP(Offset),
-    JIE(Register, Offset),
-    JIO(Register, Offset),
+    Hlf(Register),
+    Tpl(Register),
+    Inc(Register),
+    Jmp(Offset),
+    Jie(Register, Offset),
+    Jio(Register, Offset),
 }
 
 impl From<&str> for Instruction {
     fn from(input: &str) -> Self {
         let splits: Vec<_> = input.split([' ', ',']).collect();
         match splits[0] {
-            "hlf" => Self::HLF(splits[1].into()),
-            "tpl" => Self::TPL(splits[1].into()),
-            "inc" => Self::INC(splits[1].into()),
-            "jmp" => Self::JMP(splits[1].into()),
-            "jie" => Self::JIE(splits[1].into(), splits[3].into()),
-            "jio" => Self::JIO(splits[1].into(), splits[3].into()),
+            "hlf" => Self::Hlf(splits[1].into()),
+            "tpl" => Self::Tpl(splits[1].into()),
+            "inc" => Self::Inc(splits[1].into()),
+            "jmp" => Self::Jmp(splits[1].into()),
+            "jie" => Self::Jie(splits[1].into(), splits[3].into()),
+            "jio" => Self::Jio(splits[1].into(), splits[3].into()),
             _ => unreachable!(),
         }
     }
 }
 
 #[derive(Default)]
-struct CPU {
+struct Cpu {
     // Instruction pointer
     ip: usize,
     // Registers
@@ -67,7 +67,7 @@ struct CPU {
     b: usize,
 }
 
-impl CPU {
+impl Cpu {
     fn run(&mut self, instructions: &[Instruction]) {
         // While we are in program
         while self.ip < instructions.len() {
@@ -77,16 +77,16 @@ impl CPU {
 
     fn execute_instruction(&mut self, instruction: &Instruction) {
         match instruction {
-            Instruction::JMP(offset) => return self.jump(offset),
-            Instruction::JIE(reg, offset) if self.reg(reg) % 2 == 0 => return self.jump(offset),
-            Instruction::JIO(reg, offset) if self.reg(reg) == 1 => return self.jump(offset),
+            Instruction::Jmp(offset) => return self.jump(offset),
+            Instruction::Jie(reg, offset) if self.reg(reg) % 2 == 0 => return self.jump(offset),
+            Instruction::Jio(reg, offset) if self.reg(reg) == 1 => return self.jump(offset),
             _ => self.ip += 1,
         }
 
         match instruction {
-            Instruction::HLF(reg) => *self.reg_mut(reg) /= 2,
-            Instruction::TPL(reg) => *self.reg_mut(reg) *= 3,
-            Instruction::INC(reg) => *self.reg_mut(reg) += 1,
+            Instruction::Hlf(reg) => *self.reg_mut(reg) /= 2,
+            Instruction::Tpl(reg) => *self.reg_mut(reg) *= 3,
+            Instruction::Inc(reg) => *self.reg_mut(reg) += 1,
             _ => (),
         }
     }
@@ -107,25 +107,28 @@ impl CPU {
 
     fn jump(&mut self, offset: &Offset) {
         match *offset {
-            Offset::POS(v) => self.ip += v,
-            Offset::NEG(v) => self.ip -= v,
+            Offset::Pos(v) => self.ip += v,
+            Offset::Neg(v) => self.ip -= v,
         }
     }
 }
 
 fn main() {
     let input = get_input_text(DAY);
-    let instructions: Vec<_> = input.lines().map(|line| line.into()).collect();
+    let instructions: Vec<_> = input.lines().map(Instruction::from).collect();
 
     let solution1: Solution = {
-        let mut cpu = CPU::default();
+        let mut cpu = Cpu::default();
         cpu.run(&instructions);
         cpu.b
     };
 
     let solution2: Solution = {
-        let mut cpu = CPU::default();
-        cpu.a = 1;
+        let mut cpu = Cpu {
+            a: 1,
+            ..Default::default()
+        };
+
         cpu.run(&instructions);
         cpu.b
     };
@@ -136,7 +139,7 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
-    use crate::CPU;
+    use crate::{Cpu, Instruction};
 
     #[test]
     fn test_cpu() {
@@ -144,9 +147,9 @@ mod tests {
 jio a, +2
 tpl a
 inc a";
-        let instructions: Vec<_> = input.lines().map(|line| line.into()).collect();
+        let instructions: Vec<_> = input.lines().map(Instruction::from).collect();
 
-        let mut cpu = CPU::default();
+        let mut cpu = Cpu::default();
         cpu.run(&instructions);
 
         assert_eq!(cpu.a, 2);

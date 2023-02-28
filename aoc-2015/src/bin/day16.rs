@@ -75,7 +75,7 @@ impl<'input> From<&'input str> for Aunt<'input> {
 
 fn main() {
     let input = get_input_text(DAY);
-    let aunts = input.lines().map(|line| Aunt::from(line));
+    let aunts = input.lines().map(Aunt::from);
 
     let solution1: Solution = aunts
         .clone()
