@@ -12,3 +12,5 @@ name = "aoc_2016"
 aoc = { path = "../aoc" }
 # For days with complicated input :^)
 regex = "1.7.1"
+# Required for day 05
+rust-crypto = "0.2.36"
