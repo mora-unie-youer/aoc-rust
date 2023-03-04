@@ -41,7 +41,7 @@ impl HasSSL for &str {
 
         let mut bab: Vec<String> = supernets
             .iter()
-            .map(|supernet| {
+            .flat_map(|supernet| {
                 supernet
                     .chars()
                     .collect::<Vec<_>>()
@@ -50,7 +50,6 @@ impl HasSSL for &str {
                     .map(|ch| [ch[1], ch[0], ch[1]].iter().collect())
                     .collect::<Vec<String>>()
             })
-            .flatten()
             .collect();
         bab.dedup();
 

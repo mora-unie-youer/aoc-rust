@@ -1,5 +1,3 @@
-#![feature(once_cell)]
-
 use aoc_2016::*;
 
 const DAY: i32 = 8;
@@ -73,9 +71,7 @@ impl Grid {
                     new_row[new_col] = self.0[row][col];
                 }
 
-                for col in 0..WIDTH {
-                    self.0[row][col] = new_row[col];
-                }
+                self.0[row][..].copy_from_slice(&new_row[..]);
             }
             Operation::RotateCol(col, step) => {
                 let mut new_col = vec![false; HEIGHT];
@@ -84,8 +80,8 @@ impl Grid {
                     new_col[new_row] = self.0[row][col];
                 }
 
-                for row in 0..HEIGHT {
-                    self.0[row][col] = new_col[row];
+                for (row, pixel) in new_col.into_iter().enumerate() {
+                    self.0[row][col] = pixel;
                 }
             }
         }
