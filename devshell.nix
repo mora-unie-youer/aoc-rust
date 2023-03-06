@@ -12,6 +12,7 @@ let
       binutils
       gcc
       # Rust toolchain
+      bacon
       (rust-bin.selectLatestNightlyWith (toolchain: toolchain.default.override {
         extensions = [ "rust-analyzer" "rust-src" ];
       }))

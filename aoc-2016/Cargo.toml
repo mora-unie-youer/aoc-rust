@@ -10,6 +10,10 @@ name = "aoc_2016"
 
 [dependencies]
 aoc = { path = "../aoc" }
+# Required for day 11
+itertools = "0.10.5"
+# Required for day 11
+pathfinding = "4.2.1"
 # For days with complicated input :^)
 regex = "1.7.1"
 # Required for day 05
