@@ -74,23 +74,23 @@ mod tests {
 
     #[test]
     fn test_has_abba() {
-        assert_eq!("aaaa".has_abba(), false);
-        assert_eq!("abba".has_abba(), true);
+        assert!(!"aaaa".has_abba());
+        assert!("abba".has_abba());
     }
 
     #[test]
     fn test_has_tls() {
-        assert_eq!("abba[mnop]qrst".has_tls(), true);
-        assert_eq!("abcd[bddb]xyyx".has_tls(), false);
-        assert_eq!("aaaa[qwer]tyui".has_tls(), false);
-        assert_eq!("ioxxoj[asdfgh]zxcvbn".has_tls(), true);
+        assert!("abba[mnop]qrst".has_tls());
+        assert!(!"abcd[bddb]xyyx".has_tls());
+        assert!(!"aaaa[qwer]tyui".has_tls());
+        assert!("ioxxoj[asdfgh]zxcvbn".has_tls());
     }
 
     #[test]
     fn test_has_ssl() {
-        assert_eq!("aba[bab]xyz".has_ssl(), true);
-        assert_eq!("xyx[xyx]xyx".has_ssl(), false);
-        assert_eq!("aaa[kek]eke".has_ssl(), true);
-        assert_eq!("zazbz[bzb]cdb".has_ssl(), true);
+        assert!("aba[bab]xyz".has_ssl());
+        assert!(!"xyx[xyx]xyx".has_ssl());
+        assert!("aaa[kek]eke".has_ssl());
+        assert!("zazbz[bzb]cdb".has_ssl());
     }
 }

@@ -36,8 +36,8 @@ fn main() {
     let input = get_input_text(DAY);
     let input = input.trim();
 
-    let solution1: Solution = solve(&input, false);
-    let solution2: Solution = solve(&input, true);
+    let solution1: Solution = solve(input, false);
+    let solution2: Solution = solve(input, true);
 
     show_solution(DAY, solution1);
     show_solution(DAY, solution2);

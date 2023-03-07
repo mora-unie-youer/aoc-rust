@@ -20,17 +20,6 @@ impl<'input> From<&'input str> for Operand<'input> {
 }
 
 impl<'input> Operand<'input> {
-    fn is_register(&self) -> bool {
-        match self {
-            Self::Register(_) => true,
-            _ => false,
-        }
-    }
-
-    fn is_integer(&self) -> bool {
-        !self.is_register()
-    }
-
     fn register(&self) -> Option<&str> {
         match self {
             Self::Register(v) => Some(v),
@@ -80,7 +69,6 @@ impl Cpu {
             // These instructions must work with registers
             Instruction::Dec(op1) => *self.reg_mut(op1.register().unwrap()) -= 1,
             Instruction::Inc(op1) => *self.reg_mut(op1.register().unwrap()) += 1,
-
             Instruction::Cpy(op1, op2) => {
                 let value = match op1 {
                     Operand::Integer(v) => *v,
@@ -89,7 +77,6 @@ impl Cpu {
                 // Second operand must be a register
                 *self.reg_mut(op2.register().unwrap()) = value;
             }
-
             Instruction::Jnz(op1, op2) => {
                 // First operand must be a register
                 let cmp = match op1 {
