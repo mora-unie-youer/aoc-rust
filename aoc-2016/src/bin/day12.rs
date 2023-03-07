@@ -78,7 +78,6 @@ impl Cpu {
                 *self.reg_mut(op2.register().unwrap()) = value;
             }
             Instruction::Jnz(op1, op2) => {
-                // First operand must be a register
                 let cmp = match op1 {
                     Operand::Integer(v) => *v,
                     Operand::Register(v) => self.reg(v),
