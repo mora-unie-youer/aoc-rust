@@ -1,5 +1,7 @@
-{ pkgs }:
+_:
 
 {
-  name = "aoc-2015";
+  config = {
+    name = "aoc-2015";
+  };
 }

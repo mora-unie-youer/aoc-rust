@@ -1,53 +1,50 @@
-{ pkgs, ... }:
-
+{ pkgs, lib ? pkgs.lib }:
 configFile:
+
+with lib;
 let
-  # Default devshell configuration
-  defaultConfig = {
-    # Name of devshell
-    name = "aoc-rust";
-    # Packages used in devshell
-    packages = with pkgs; [
-      # Toolchain needed to build binaries
-      binutils
-      gcc
-      # Rust toolchain
-      bacon
-      (rust-bin.selectLatestNightlyWith (toolchain: toolchain.default.override {
-        extensions = [ "rust-analyzer" "rust-src" ];
-      }))
-      # Binaries and libraries needed for Rust crates
-      openssl
-      pkg-config
-    ];
+  moduleConfiguration = {
+    options = {
+      name = mkOption {
+        type = types.str;
+        description = "Name of devshell";
+      };
+
+      packages = mkOption {
+        type = types.listOf types.package;
+        description = "Packages which will be included in devshell";
+      };
+    };
+
+    config = {
+      name = mkDefault "aoc-rust";
+      packages = with pkgs; [
+        # Toolchain needed to build binaries
+        binutils
+        gcc
+        # Rust toolchain
+        bacon
+        hyperfine
+        (rust-bin.selectLatestNightlyWith (toolchain: toolchain.default.override {
+          extensions = [ "rust-analyzer" "rust-src" ];
+        }))
+        # Binaries and libraries needed for Rust crates
+        openssl
+        pkg-config
+      ];
+    };
   };
 
-  # Function to merge default and given configurations
-  recursiveMerge = attrList:
-    with pkgs.lib;
-    let f = attrPath:
-      zipAttrsWith (n: values:
-        if tail values == []
-          then head values
-        else if all isList values
-          then unique (concatLists values)
-        else if all isAttrs values
-          then f (attrPath ++ [n]) values
-        else last values
-      );
-    in f [] attrList;
-
-  loadedConfiguration = import configFile { inherit pkgs; };
-
-  # Devshell configuration
-  configuration = recursiveMerge [
-    defaultConfig
-    loadedConfiguration
-    {
-      preInitShellHook = ''
-        cd ${loadedConfiguration.name}
-      '';
-    }
-  ];
+  module = evalModules {
+    modules = [
+      configFile
+      moduleConfiguration
+    ];
+  };
 in
-pkgs.devShell.mkShell configuration
+pkgs.devShell.mkShell {
+  inherit (module.config) name packages;
+  preInitShellHook = ''
+    cd ${module.config.name}
+  '';
+}
