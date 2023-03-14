@@ -44,7 +44,7 @@ let
     defaultConfig
     loadedConfiguration
     {
-      shellHooks.preInit = ''
+      preInitShellHook = ''
         cd ${loadedConfiguration.name}
       '';
     }
