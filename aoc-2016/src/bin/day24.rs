@@ -12,7 +12,7 @@ type Solution = usize;
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
 struct Pos(usize, usize);
 impl Pos {
-    fn neighbors(&self, map: &Vec<Vec<bool>>) -> Vec<Self> {
+    fn neighbors(&self, map: &[Vec<bool>]) -> Vec<Self> {
         [
             Pos(self.0 - 1, self.1),
             Pos(self.0 + 1, self.1),
