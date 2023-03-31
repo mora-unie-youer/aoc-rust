@@ -24,11 +24,9 @@ fn knot_hash(input: &str) -> Solution {
 
     let mut list: Vec<_> = (0..=255).collect();
     let mut current_pos = 0;
-    let mut skip_size = 0;
-    for length in lengths {
+    for (skip_size, length) in lengths.into_iter().enumerate() {
         reverse_sublist(&mut list, current_pos, length);
         current_pos = (current_pos + length + skip_size) % list.len();
-        skip_size += 1;
     }
 
     (list[0] * list[1]).to_string()
