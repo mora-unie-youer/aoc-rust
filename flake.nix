@@ -34,7 +34,8 @@
           "2015" = devShell ./aoc-2015/devshell.nix;
           "2016" = devShell ./aoc-2016/devshell.nix;
           "2017" = devShell ./aoc-2017/devshell.nix;
-          default = devShells."2017";
+          "2018" = devShell ./aoc-2018/devshell.nix;
+          default = devShells."2018";
         };
       }
     );
