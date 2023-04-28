@@ -3,21 +3,25 @@ use aoc_2018::*;
 const DAY: i32 = 14;
 type Solution = String;
 
+fn iteration(elf1: &mut usize, elf2: &mut usize, table: &mut Vec<usize>) {
+    let (score1, score2) = (table[*elf1], table[*elf2]);
+    let score = score1 + score2;
+
+    if score >= 10 {
+        table.push(1);
+    }
+    table.push(score % 10);
+
+    *elf1 = (*elf1 + 1 + score1) % table.len();
+    *elf2 = (*elf2 + 1 + score2) % table.len();
+}
+
 fn solve_part1(input: usize) -> Solution {
     let mut table = vec![3, 7];
     let (mut elf1, mut elf2) = (0, 1);
 
     while table.len() < input + 10 {
-        let (score1, score2) = (table[elf1], table[elf2]);
-        let score = score1 + score2;
-        score
-            .to_string()
-            .chars()
-            .map(|ch| ch.to_digit(10).unwrap() as usize)
-            .for_each(|v| table.push(v));
-
-        elf1 = (elf1 + 1 + score1) % table.len();
-        elf2 = (elf2 + 1 + score2) % table.len();
+        iteration(&mut elf1, &mut elf2, &mut table);
     }
 
     table[input..].iter().map(|v| v.to_string()).collect()
@@ -35,8 +39,7 @@ fn solve_part2(input: usize) -> Solution {
 
     let mut skip_size = 0;
     loop {
-        let slice = &table[skip_size..];
-        if let Some(i) = slice
+        if let Some(i) = table[skip_size..]
             .windows(input.len())
             .position(|window| window == input)
         {
@@ -44,19 +47,9 @@ fn solve_part2(input: usize) -> Solution {
             return pos.to_string();
         }
 
-        // Need to skip talbe if there are more than 2 * input.len() elements on table
-        skip_size = 0.max(table.len() as isize - 2 * input.len() as isize) as usize;
-
-        let (score1, score2) = (table[elf1], table[elf2]);
-        let score = score1 + score2;
-        score
-            .to_string()
-            .chars()
-            .map(|ch| ch.to_digit(10).unwrap() as usize)
-            .for_each(|v| table.push(v));
-
-        elf1 = (elf1 + 1 + score1) % table.len();
-        elf2 = (elf2 + 1 + score2) % table.len();
+        iteration(&mut elf1, &mut elf2, &mut table);
+        // Need to skip table if there are more than input.len() elements on table
+        skip_size = 0.max(table.len() as isize - input.len() as isize - 1) as usize;
     }
 }
 
