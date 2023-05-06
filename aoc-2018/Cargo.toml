@@ -9,3 +9,5 @@ edition = "2021"
 aoc = { path = "../aoc" }
 # Required for day 04
 chrono = "0.4.24"
+# Required for day 22
+pathfinding = "4.2.1"
