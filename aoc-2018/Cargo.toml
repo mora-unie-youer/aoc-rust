@@ -11,3 +11,5 @@ aoc = { path = "../aoc" }
 chrono = "0.4.24"
 # Required for day 22
 pathfinding = "4.2.1"
+# For days with complicated input :^)
+regex = "1.8.1"
