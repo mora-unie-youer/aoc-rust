@@ -9,3 +9,5 @@ edition = "2021"
 aoc = { path = "../aoc" }
 # Required for day 07
 itertools = "0.10.5"
+# Required for day 15
+pathfinding = "4.2.1"
