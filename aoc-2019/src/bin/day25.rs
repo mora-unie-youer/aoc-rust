@@ -237,11 +237,11 @@ impl State {
         }));
 
         // Take item
-        const BLACKLIST: [&str; 2] = ["infinite loop", "molten lava"];
         successors.extend(
             room_items
                 .iter()
-                .filter(|item| !BLACKLIST.contains(&item.as_str()))
+                // Blacklist for avoiding spinlock
+                .filter(|item| item != &"infinite loop")
                 .filter(|item| !self.items.contains(item))
                 .map(|item| {
                     let mut new_state = self.clone();
