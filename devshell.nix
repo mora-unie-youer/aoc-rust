@@ -24,6 +24,7 @@ let
         gcc
         # Rust toolchain
         bacon
+        cargo-flamegraph
         hyperfine
         (rust-bin.selectLatestNightlyWith (toolchain: toolchain.default.override {
           extensions = [ "rust-analyzer" "rust-src" ];
