@@ -38,7 +38,8 @@
           "2019" = devShell ./aoc-2019/devshell.nix;
           "2020" = devShell ./aoc-2020/devshell.nix;
           "2021" = devShell ./aoc-2021/devshell.nix;
-          default = devShells."2021";
+          "2022" = devShell ./aoc-2022/devshell.nix;
+          default = devShells."2022";
         };
       }
     );
