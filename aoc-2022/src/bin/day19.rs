@@ -45,7 +45,7 @@ fn simulate_blueprint(blueprint: &Blueprint, max_time: usize) -> usize {
 
     fn simulate(
         (blueprint, time, ores, robots): State,
-        max_robots: [usize; 4],
+        max_robots: &[usize; 4],
         max_time: usize,
         max_geodes: &mut usize,
     ) {
@@ -86,15 +86,13 @@ fn simulate_blueprint(blueprint: &Blueprint, max_time: usize) -> usize {
                 continue;
             }
 
-            let new_ores: [usize; 4] = ores
-                .into_iter()
-                .enumerate()
-                .map(|(i, ore)| ore + robots[i] * (wait_time + 1) - recipe[i])
-                .collect_vec()
-                .try_into()
-                .unwrap();
             let mut new_robots = robots;
             new_robots[i] += 1;
+
+            let mut new_ores = ores;
+            for i in 0..4 {
+                new_ores[i] = new_ores[i] + robots[i] * (wait_time + 1) - recipe[i];
+            }
 
             // Predicting if we can gather more than max
             let remaining_time = max_time - new_time;
@@ -133,7 +131,7 @@ fn simulate_blueprint(blueprint: &Blueprint, max_time: usize) -> usize {
     max_robots[3] = std::usize::MAX;
 
     let mut max_geodes = 0;
-    simulate(initial_state, max_robots, max_time, &mut max_geodes);
+    simulate(initial_state, &max_robots, max_time, &mut max_geodes);
 
     max_geodes
 }
