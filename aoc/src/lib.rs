@@ -48,7 +48,8 @@ fn fetch_input_file(year: i32, day: i32, filename: &str) -> Result<(), ()> {
 static mut PART: i32 = 1;
 pub fn show_solution<T: Display>(day: i32, solution: T) {
     unsafe {
-        println!("[Day {day:02}.{PART}] Solution: {solution}");
+        let part = PART;
+        println!("[Day {day:02}.{}] Solution: {solution}", part);
         PART += 1;
     }
 }
