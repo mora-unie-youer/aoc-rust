@@ -8,7 +8,6 @@ type Solution = usize;
 
 fn main() {
     let input = get_input_text(DAY);
-    dbg!(&input);
 
     let robots = input.lines().map(|line| {
         let mut parts = line.split([' ', '=', ',']);
@@ -40,59 +39,81 @@ fn main() {
         .filter_map(|(quad, robots)| (quad != 0).then_some(robots.count()))
         .product();
 
-    let solution2: Solution = {
-        let mut robots = robots.collect_vec();
+    // let solution2: Solution = {
+    //     let mut robots = robots.collect_vec();
+    //
+    //     let mut iteration = 0;
+    //     for i in 0..1000000 {
+    //         let mut map = [['.'; WIDTH as usize]; HEIGHT as usize];
+    //         for &(px, py, _, _) in &robots {
+    //             map[py as usize][px as usize] = '#';
+    //         }
+    //
+    //         // Print map if at least one line has "a lot of robots"
+    //         // let has_tree = (0..WIDTH as usize).any(|j| {
+    //         //     let max_length = map
+    //         //         .iter()
+    //         //         .filter_map(|line| line.get(j))
+    //         //         .chunk_by(|&&ch| ch)
+    //         //         .into_iter()
+    //         //         .filter(|(ch, _)| *ch == '#')
+    //         //         .map(|(_, group)| group.count())
+    //         //         .max()
+    //         //         .unwrap_or(0);
+    //         //     // Frame of tree is 30 chars high
+    //         //     max_length >= 30
+    //         // });
+    //
+    //         let has_tree = map.iter().any(|line| {
+    //             line.iter()
+    //                 .chunk_by(|&&ch| ch)
+    //                 .into_iter()
+    //                 .filter(|(ch, _)| *ch == '#')
+    //                 .map(|(_, group)| group.count())
+    //                 .max()
+    //                 .unwrap_or(0)
+    //                 // Frame of tree is 30 chars high
+    //                 >= 30
+    //         });
+    //
+    //         if has_tree {
+    //             // println!("Iteration {i}");
+    //             // map.iter()
+    //             //     .for_each(|line| println!("{}", line.iter().collect::<String>()));
+    //             iteration = i;
+    //             break;
+    //         }
+    //
+    //         // Simulate
+    //         for robot in &mut robots {
+    //             robot.0 = (robot.0 + robot.2).rem_euclid(WIDTH);
+    //             robot.1 = (robot.1 + robot.3).rem_euclid(HEIGHT);
+    //         }
+    //     }
+    //
+    //     iteration
+    // };
 
-        let mut iteration = 0;
-        for i in 0..1000000 {
-            let mut map = [['.'; WIDTH as usize]; HEIGHT as usize];
-            for &(px, py, _, _) in &robots {
-                map[py as usize][px as usize] = '#';
+    let solution2 = {
+        let robots = robots.collect_vec();
+        let mut map = [[0; WIDTH as usize]; HEIGHT as usize];
+
+        let mut i = 1;
+        'time: loop {
+            for &(px, py, vx, vy) in &robots {
+                let x = (px + vx * i).rem_euclid(WIDTH) as usize;
+                let y = (py + vy * i).rem_euclid(HEIGHT) as usize;
+
+                if map[y][x] == i {
+                    i += 1;
+                    continue 'time;
+                }
+
+                map[y][x] = i;
             }
 
-            // Print map if at least one line has "a lot of robots"
-            // let has_tree = (0..WIDTH as usize).any(|j| {
-            //     let max_length = map
-            //         .iter()
-            //         .filter_map(|line| line.get(j))
-            //         .chunk_by(|&&ch| ch)
-            //         .into_iter()
-            //         .filter(|(ch, _)| *ch == '#')
-            //         .map(|(_, group)| group.count())
-            //         .max()
-            //         .unwrap_or(0);
-            //     // Frame of tree is 30 chars high
-            //     max_length >= 30
-            // });
-
-            let has_tree = map.iter().any(|line| {
-                line.iter()
-                    .chunk_by(|&&ch| ch)
-                    .into_iter()
-                    .filter(|(ch, _)| *ch == '#')
-                    .map(|(_, group)| group.count())
-                    .max()
-                    .unwrap_or(0)
-                    // Frame of tree is 30 chars high
-                    >= 30
-            });
-
-            if has_tree {
-                // println!("Iteration {i}");
-                // map.iter()
-                //     .for_each(|line| println!("{}", line.iter().collect::<String>()));
-                iteration = i;
-                break;
-            }
-
-            // Simulate
-            for robot in &mut robots {
-                robot.0 = (robot.0 + robot.2).rem_euclid(WIDTH);
-                robot.1 = (robot.1 + robot.3).rem_euclid(HEIGHT);
-            }
+            break i;
         }
-
-        iteration
     };
 
     show_solution(DAY, solution1);
