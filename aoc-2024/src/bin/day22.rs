@@ -1,60 +1,49 @@
-use std::collections::HashMap;
-
 use aoc_2024::*;
+use itertools::{Itertools, iterate};
 
 const DAY: i32 = 22;
 type Solution = usize;
+
+fn next_number(n: &usize) -> usize {
+    const MASK: usize = (1 << 24) - 1;
+
+    let mut n = (n ^ (n << 6)) & MASK;
+    n ^= n >> 5;
+    (n ^ (n << 11)) & MASK
+}
+
+fn index(a: isize, b: isize, c: isize, d: isize) -> usize {
+    (6859 * (a + 9) + 361 * (b + 9) + 19 * (c + 9) + d + 9) as usize
+}
 
 fn main() {
     let input = get_input_text(DAY);
 
     let solution1: Solution = input
         .lines()
-        .map(|line| {
-            let mut number: usize = line.parse().unwrap();
-
-            for _ in 0..2000 {
-                number = (number ^ (number * 64)) % 16777216;
-                number = (number ^ (number / 32)) % 16777216;
-                number = (number ^ (number * 2048)) % 16777216;
-            }
-
-            number
-        })
+        .map(|line| line.parse().unwrap())
+        .flat_map(|v| iterate(v, next_number).nth(2000))
         .sum();
 
     let solution2: Solution = {
-        let mut sequences = HashMap::new();
+        let mut sequences = vec![0; 19usize.pow(4)];
+        let mut used = vec![0; 19usize.pow(4)];
 
-        for line in input.lines() {
-            let mut number: usize = line.parse().unwrap();
-
-            let mut sequence = 0;
-            let mut used = vec![false; 2usize.pow(20)];
-
-            for i in 0..2000 {
-                let mut new_number = number;
-                new_number = (new_number ^ (new_number * 64)) % 16777216;
-                new_number = (new_number ^ (new_number / 32)) % 16777216;
-                new_number = (new_number ^ (new_number * 2048)) % 16777216;
-
-                let prev_bananas = number % 10;
-                let bananas = new_number % 10;
-                let diff = bananas as isize - prev_bananas as isize;
-
-                let value = diff as usize & 0b11111;
-                sequence = ((sequence << 5) | value) & ((1 << 20) - 1);
-
-                if i >= 3 && !used[sequence] {
-                    *sequences.entry(sequence).or_default() += bananas;
-                    used[sequence] = true;
+        for (line, i) in input.lines().zip(1..) {
+            for (a, b, c, d, e) in iterate(line.parse().unwrap(), next_number)
+                .take(2001)
+                .map(|v| (v % 10) as isize)
+                .tuple_windows()
+            {
+                let j = index(b - a, c - b, d - c, e - d);
+                if used[j] != i {
+                    used[j] = i;
+                    sequences[j] += e as usize;
                 }
-
-                number = new_number;
             }
         }
 
-        *sequences.values().max().unwrap()
+        sequences.into_iter().max().unwrap()
     };
 
     show_solution(DAY, solution1);
