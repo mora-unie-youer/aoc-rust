@@ -24,12 +24,13 @@ fn main() {
         .sum();
 
     let solution2: Solution = {
-        let mut sequences: HashMap<[isize; 4], usize> = HashMap::new();
+        let mut sequences = HashMap::new();
 
         for line in input.lines() {
             let mut number: usize = line.parse().unwrap();
-            let mut sequence = [0, 0, 0, 0];
-            let mut best_sequences = HashMap::new();
+
+            let mut sequence = 0;
+            let mut used = vec![false; 2usize.pow(20)];
 
             for i in 0..2000 {
                 let mut new_number = number;
@@ -40,18 +41,16 @@ fn main() {
                 let prev_bananas = number % 10;
                 let bananas = new_number % 10;
                 let diff = bananas as isize - prev_bananas as isize;
-                sequence.rotate_left(1);
-                sequence[3] = diff;
 
-                if i >= 3 {
-                    best_sequences.entry(sequence).or_insert(bananas);
+                let value = diff as usize & 0b11111;
+                sequence = ((sequence << 5) | value) & ((1 << 20) - 1);
+
+                if i >= 3 && !used[sequence] {
+                    *sequences.entry(sequence).or_default() += bananas;
+                    used[sequence] = true;
                 }
 
                 number = new_number;
-            }
-
-            for (seq, bananas) in best_sequences {
-                *sequences.entry(seq).or_default() += bananas;
             }
         }
 
